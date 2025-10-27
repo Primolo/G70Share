@@ -32,7 +32,7 @@ const Auth = () => {
     const { error } = await supabase.auth.signInWithOtp({ 
         email: email, 
         options: { 
-            emailRedirectTo: window.location.origin,
+            
             shouldCreateUser: true // Assure la création d'un utilisateur si nouveau pilote
         } 
     });

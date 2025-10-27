@@ -1,28 +1,13 @@
-import { createClient } from '@supabase/supabase-js'
-import React, { useState, useEffect } from 'react'
-import Booking from './Booking'; // Import du composant de réservation
+import React, { useState, useEffect } from 'react';
+import { supabase } from './supabaseClient'; // Import du client isolé et stable
+import Booking from './Booking'; 
 import SessionHandler from './SessionHandler';
-import { supabase } from './supabaseClient.js'; // ✅ CORRECTION
-// ...
-const UL_ID_G70 = 1; // Garder la ligne ID ULM
-// ...
 
-// REMPLACER PAR VOS CLÉS TROUVÉES DANS LE DASHBOARD SUPABASE
-//const supabaseUrl = 'https://ikileeetvexzkybwzuxv.supabase.co '
-//const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlraWxlZWV0dmV4emt5Ynd6dXh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA2MjE3ODYsImV4cCI6MjA3NjE5Nzc4Nn0._Zabpl-p9hMGyQUVZIeNAz40qmpqTt4QM2yQo7YV0Fg' 
-
-//export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
- //   auth: {
- //       storage: window.sessionStorage,
- //       autoRefreshToken: true,
- //       persistSession: true,
-  //      detectSessionInUrl: true
-  //  }
-//})
+const UL_ID_G70 = 1; // ID de l'ULM
 
 
 // ----------------------------------------------------
-// 2. COMPOSANT AUTH : Gère la page de connexion
+// COMPOSANT AUTH : Page de connexion
 // ----------------------------------------------------
 const Auth = () => {
   const [email, setEmail] = useState('');
@@ -34,13 +19,9 @@ const Auth = () => {
     setLoading(true);
     setMessage('');
 
-    // Utilisation de signInWithOtp (OTP par email sur téléphone, ou lien magique)
     const { error } = await supabase.auth.signInWithOtp({ 
         email: email, 
-        options: { 
-            
-            shouldCreateUser: true // Assure la création d'un utilisateur si nouveau pilote
-        } 
+        options: { shouldCreateUser: true } 
     });
 
     if (error) {
@@ -90,7 +71,7 @@ const Auth = () => {
 
 
 // ----------------------------------------------------
-// 3. COMPOSANT DASHBOARD : Affiche les données du G70 et le pilote
+// COMPOSANT DASHBOARD : Affichage principal
 // ----------------------------------------------------
 const Dashboard = ({ session }) => {
     const [pilote, setPilote] = useState(null);
@@ -99,7 +80,7 @@ const Dashboard = ({ session }) => {
 
     useEffect(() => {
         const fetchData = async () => {
-            // 1. Récupère les données du pilote depuis la table 'pilotes'
+            // 1. Récupère les données du pilote 
             const { data: piloteData } = await supabase
                 .from('pilotes')
                 .select('*')
@@ -121,7 +102,7 @@ const Dashboard = ({ session }) => {
 
         fetchData();
         
-        // 3. Écouteur en temps réel sur la table ULM (mise à jour des heures/carburant)
+        // 3. Écouteur en temps réel sur la table ULM 
         const ulmSubscription = supabase
             .channel('ulm_status_channel')
             .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'ulm_flotte' }, payload => {
@@ -187,7 +168,7 @@ const Dashboard = ({ session }) => {
 
             {/* Intégration du composant de Réservation */}
             {ulmStatus && pilote && (
-                <Booking ulmId={ulmStatus.id} piloteId={pilote.id} />
+                <Booking piloteId={pilote.id} />
             )}
         </div>
     );
@@ -195,16 +176,34 @@ const Dashboard = ({ session }) => {
 
 
 // ----------------------------------------------------
-// 4. COMPOSANT PRINCIPAL (App) : Gère la Session
+// COMPOSANT PRINCIPAL (App) : Gère le Routing de Session
 // ----------------------------------------------------
-
 function App() {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
-  // ... (Reste inchangé)
 
+  useEffect(() => {
+    // 1. Tente de récupérer la session au chargement
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setLoading(false);
+    });
+
+    // 2. Mise en place d'un écouteur pour les changements d'état (connexion/déconnexion)
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => {
+        if (subscription) {
+            subscription.unsubscribe();
+        }
+    };
+  }, []);
+  
   if (loading) {
-    // Ajout du SessionHandler même pendant le chargement
     return (
         <>
             <SessionHandler /> 

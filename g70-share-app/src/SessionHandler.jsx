@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { supabase } from './App'; // Importe le client supabase
+import { supabase } from './supabaseClient'; // <-- NOUVEL IMPORT
+// ...
 
 const SessionHandler = () => {
     useEffect(() => {

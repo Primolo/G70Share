@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from './supabaseClient'; // Import du client isolé et stable
+import { supabase } from './supabaseClient.js'; // Import du client isolé et stable
 import Booking from './Booking'; 
 import SessionHandler from './SessionHandler';
 

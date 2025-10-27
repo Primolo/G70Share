@@ -2,7 +2,7 @@ import { createClient } from '@supabase/supabase-js'
 import React, { useState, useEffect } from 'react'
 import Booking from './Booking'; // Import du composant de réservation
 import SessionHandler from './SessionHandler';
-import { supabase } from './supabaseClient'; // <-- NOUVEL IMPORT
+import { supabase } from './supabaseClient.js'; // ✅ CORRECTION
 // ...
 const UL_ID_G70 = 1; // Garder la ligne ID ULM
 // ...

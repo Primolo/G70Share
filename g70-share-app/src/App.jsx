@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import React, { useState, useEffect } from 'react'
+import Booking from './Booking'; // Import du composant de réservation
 
 // REMPLACER PAR VOS CLÉS TROUVÉES DANS LE DASHBOARD SUPABASE
 const supabaseUrl = 'https://ikileeetvexzkybwzuxv.supabase.co '

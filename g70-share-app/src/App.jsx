@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import React, { useState, useEffect } from 'react'
 import Booking from './Booking'; // Import du composant de réservation
+import SessionHandler from './SessionHandler';
 
 // REMPLACER PAR VOS CLÉS TROUVÉES DANS LE DASHBOARD SUPABASE
 const supabaseUrl = 'https://ikileeetvexzkybwzuxv.supabase.co '
@@ -191,42 +192,39 @@ const Dashboard = ({ session }) => {
 // ----------------------------------------------------
 // 4. COMPOSANT PRINCIPAL (App) : Gère la Session
 // ----------------------------------------------------
+
 function App() {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
+  // ... (Reste inchangé)
 
-  useEffect(() => {
-    // Tente de récupérer la session au chargement
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setLoading(false);
-    });
-
-    // Mise en place d'un écouteur pour les changements d'état (connexion/déconnexion)
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
-
-    return () => {
-        if (subscription) {
-            subscription.unsubscribe();
-        }
-    };
-  }, []);
-  
   if (loading) {
-    return <div style={{ padding: '20px', textAlign: 'center' }}>Initialisation du système de navigation...</div>;
+    // Ajout du SessionHandler même pendant le chargement
+    return (
+        <>
+            <SessionHandler /> 
+            <div style={{ padding: '20px', textAlign: 'center' }}>Initialisation du système de navigation...</div>
+        </>
+    );
   }
 
   // Si une session existe, affiche le Dashboard
   if (session) {
-    return <Dashboard session={session} />;
+    return (
+        <>
+            <SessionHandler /> 
+            <Dashboard session={session} />
+        </>
+    );
   }
 
   // Sinon, affiche la page de connexion
-  return <Auth />;
+  return (
+        <>
+            <SessionHandler /> 
+            <Auth />
+        </>
+    );
 }
 
 export default App;

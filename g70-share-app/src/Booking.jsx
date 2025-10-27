@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from './App'; // 👈 Importe le client supabase depuis App.jsx
+import { supabase } from './supabaseClient'; // <-- NOUVEL IMPORT
+// ...
 
 const Booking = ({ ulmId, piloteId }) => {
     const [reservations, setReservations] = useState([]);

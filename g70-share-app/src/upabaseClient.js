@@ -1,8 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 
 // ⚠️ REMPLACER PAR VOS CLÉS TROUVÉES DANS LE DASHBOARD SUPABASE
-const supabaseUrl = 'VOTRE_URL_SUPABASE'; 
-const supabaseAnonKey = 'VOTRE_CLÉ_ANON_SUPABASE'; 
+const supabaseUrl = 'https://ikileeetvexzkybwzuxv.supabase.co '
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlraWxlZWV0dmV4emt5Ynd6dXh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA2MjE3ODYsImV4cCI6MjA3NjE5Nzc4Nn0._Zabpl-p9hMGyQUVZIeNAz40qmpqTt4QM2yQo7YV0Fg'  
 
 // Initialisation du client Supabase. EXPORTÉ SEUL.
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {

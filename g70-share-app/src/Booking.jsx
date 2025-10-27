@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from './supabaseClient'; // <-- NOUVEL IMPORT
+import { supabase } from './supabaseClient.js'; // ✅ CORRECTION
 // ...
 
 const Booking = ({ ulmId, piloteId }) => {

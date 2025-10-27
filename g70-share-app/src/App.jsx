@@ -176,24 +176,31 @@ const Dashboard = ({ session }) => {
 
 
 // ----------------------------------------------------
-// COMPOSANT PRINCIPAL (App) : Gère le Routing de Session
+// 4. COMPOSANT PRINCIPAL (App) : Gère le Routing de Session
 // ----------------------------------------------------
 function App() {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // 1. Tente de récupérer la session au chargement
+    // Tente de récupérer la session au chargement (pour les sessions persistantes)
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setLoading(false);
     });
 
-    // 2. Mise en place d'un écouteur pour les changements d'état (connexion/déconnexion)
+    // Mise en place d'un écouteur pour les changements d'état (connexion/déconnexion, et lecture du jeton)
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
+
+      // Si l'URL contient les jetons après la connexion (Magic Link),
+      // Supabase le gère en interne, et l'écouteur est alerté.
+      // Nous nous assurons de nettoyer l'URL pour un affichage propre après le login.
+      if (window.location.hash && window.location.hash.includes('access_token')) {
+          window.history.replaceState(null, null, window.location.pathname);
+      }
     });
 
     return () => {
@@ -205,30 +212,17 @@ function App() {
   
   if (loading) {
     return (
-        <>
-            <SessionHandler /> 
-            <div style={{ padding: '20px', textAlign: 'center' }}>Initialisation du système de navigation...</div>
-        </>
+        <div style={{ padding: '20px', textAlign: 'center' }}>Initialisation du système de navigation...</div>
     );
   }
 
   // Si une session existe, affiche le Dashboard
   if (session) {
-    return (
-        <>
-            <SessionHandler /> 
-            <Dashboard session={session} />
-        </>
-    );
+    return <Dashboard session={session} />;
   }
 
   // Sinon, affiche la page de connexion
-  return (
-        <>
-            <SessionHandler /> 
-            <Auth />
-        </>
-    );
+  return <Auth />;
 }
 
 export default App;
